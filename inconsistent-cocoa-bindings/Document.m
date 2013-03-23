@@ -1,59 +1,87 @@
-//
-//  Document.m
-//  inconsistent-cocoa-bindings
-//
-//  Created by Cody on 22/03/2013.
-//  Copyright (c) 2013 Cody Robbins. All rights reserved.
-//
-
 #import "Document.h"
 
 @implementation Document
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-    // Add your subclass-specific initialization here.
-    }
-    return self;
-}
-
 - (NSString *)windowNibName
 {
-  // Override returning the nib file name of the document
-  // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
-  return @"Document";
-}
-
-- (void)windowControllerDidLoadNib:(NSWindowController *)aController
-{
-  [super windowControllerDidLoadNib:aController];
-  // Add any code here that needs to be executed once the windowController has loaded the document's window.
-}
-
-+ (BOOL)autosavesInPlace
-{
-    return YES;
+  return(@"Document");
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
 {
-  // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
-  // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-  NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
-  @throw exception;
-  return nil;
+  return(nil);
 }
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
 {
-  // Insert code here to read your document from the given data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning NO.
-  // You can also choose to override -readFromFileWrapper:ofType:error: or -readFromURL:ofType:error: instead.
-  // If you override either of these, you should also override -isEntireFileLoaded to return NO if the contents are lazily loaded.
-  NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
-  @throw exception;
-  return YES;
+  return(YES);
+}
+
+- (IBAction)toggleTopSubview:(id)sender
+{
+  if (self.isTopSubviewCollapsed)
+    [self.splitview setPosition:50 ofDividerAtIndex:0];
+  else
+    [self.splitview setPosition:[self.splitview minPossiblePositionOfDividerAtIndex:0] ofDividerAtIndex:0];
+}
+
+- (IBAction)toggleBottomSubview:(id)sender
+{
+  if (self.isBottomSubviewCollapsed)
+    [self.splitview setPosition:50 ofDividerAtIndex:0];
+  else
+    [self.splitview setPosition:[self.splitview maxPossiblePositionOfDividerAtIndex:0] ofDividerAtIndex:0];
+}
+
+- (BOOL)isTopSubviewCollapsed
+{
+  return([self.splitview isSubviewCollapsed:self.topSubview]);
+}
+
+- (BOOL)isBottomSubviewCollapsed
+{
+  return([self.splitview isSubviewCollapsed:self.bottomSubview]);
+}
+
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
+{
+  if ([key isEqualToString:@"isTopSubviewCollapsed"] || [key isEqualToString:@"isBottomSubviewCollapsed"])
+    return(NO);
+  else
+    return([super automaticallyNotifiesObserversForKey:key]);
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key
+{
+  if (![key isEqualToString:@"isTopSubviewCollapsed"] && ![key isEqualToString:@"isBottomSubviewCollapsed"])
+    [super setValue:value forUndefinedKey:key];
+}
+
+- (void)splitViewWillResizeSubviews:(NSNotification *)notification
+{
+  [self willChangeValueForKey:@"isTopSubviewCollapsed"];
+  [self willChangeValueForKey:@"isBottomSubviewCollapsed"];
+}
+
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification
+{
+  [self didChangeValueForKey:@"isBottomSubviewCollapsed"];
+  [self didChangeValueForKey:@"isTopSubviewCollapsed"];
+}
+
+- (BOOL)splitView:(NSSplitView *)splitView canCollapseSubview:(NSView *)subview
+{
+  return(YES);
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimum ofSubviewAt:(NSInteger)dividerIndex
+{
+  return(proposedMinimum + 50);
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximum ofSubviewAt:(NSInteger)dividerIndex
+{
+  return(proposedMaximum - 50);
 }
 
 @end

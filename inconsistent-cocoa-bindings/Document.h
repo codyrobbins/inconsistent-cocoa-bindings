@@ -1,13 +1,12 @@
-//
-//  Document.h
-//  inconsistent-cocoa-bindings
-//
-//  Created by Cody on 22/03/2013.
-//  Copyright (c) 2013 Cody Robbins. All rights reserved.
-//
+@interface Document : NSDocument <NSSplitViewDelegate>
 
-#import <Cocoa/Cocoa.h>
+@property IBOutlet NSSplitView *splitview;
+@property IBOutlet NSView *topSubview;
+@property IBOutlet NSView *bottomSubview;
 
-@interface Document : NSDocument
+- (IBAction)toggleTopSubview:(id)sender;
+- (IBAction)toggleBottomSubview:(id)sender;
+- (BOOL)isTopSubviewCollapsed;
+- (BOOL)isBottomSubviewCollapsed;
 
 @end
