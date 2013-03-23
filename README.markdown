@@ -27,3 +27,5 @@ Expected behavior
 -----------------
 
 Only the `Bottom Pane` menu item should be checked, since the top pane of the splitview is currently collapsed. The labels in the document view bound directly to the same accessors show the correct values.
+
+If you switch to another application, switch back, and then open the `View` menu, again, however, the bindings re-sync themselves and the menu items are in the correct state.
